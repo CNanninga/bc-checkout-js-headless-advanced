@@ -13,7 +13,7 @@ import {
     ShippingInitializeOptions,
     ShippingRequestOptions,
 } from '@bigcommerce/checkout-sdk';
-import { noop } from 'lodash';
+import { noop, omit, isEqualWith } from 'lodash';
 import React, { Component, ReactNode } from 'react';
 import { createSelector } from 'reselect';
 
@@ -34,6 +34,44 @@ import ShippingForm from './ShippingForm';
 import ShippingHeader from './ShippingHeader';
 import { SingleShippingFormValues } from './SingleShippingForm';
 import StripeShipping from './stripeUPE/StripeShipping';
+
+export function getPickupAddress(): Address {
+    return {
+        firstName: 'In-store Pickup',
+        lastName: 'Canyon Lake Location',
+        company: 'ACME Retail',
+        address1: '123 Canyon Lake Dr',
+        address2: '',
+        city: 'Austin',
+        stateOrProvince: 'Texas',
+        stateOrProvinceCode: 'TX',
+        shouldSaveAddress: false,
+        country: 'United States',
+        countryCode: 'US',
+        postalCode: '78726',
+        phone: '555-555-5555',
+        customFields: [],
+    }
+ }
+
+ export function getEmptyAddress(): Address {
+    return {
+        firstName: '',
+        lastName: '',
+        company: '',
+        address1: '',
+        address2: '',
+        city: '',
+        stateOrProvince: '',
+        stateOrProvinceCode: '',
+        shouldSaveAddress: false,
+        country: '',
+        countryCode: '',
+        postalCode: '',
+        phone: '',
+        customFields: [],
+    }
+ }
 
 export interface ShippingProps {
     isBillingSameAsShipping: boolean;
@@ -94,6 +132,23 @@ class Shipping extends Component<ShippingProps & WithCheckoutShippingProps, Ship
         this.state = {
             isInitializing: true,
         };
+    }
+
+    isPickup: (consignments?: Consignment[]) => boolean = (
+        consignments
+    ) => {
+        if(!consignments || consignments.length !== 1) {
+            return false;
+        }
+        const omissions = ['email', 'customFields'];
+        const pickupAddress = getPickupAddress();
+        if(isEqualWith(
+            omit(consignments[0].shippingAddress, omissions),
+            omit(pickupAddress, omissions)
+        )) {
+            return true;
+        }
+        return false;
     }
 
     async componentDidMount(): Promise<void> {
