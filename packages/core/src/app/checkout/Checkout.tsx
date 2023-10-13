@@ -121,6 +121,7 @@ export interface CheckoutState {
     hasSelectedShippingOptions: boolean;
     isHidingStepNumbers: boolean;
     isSubscribed: boolean;
+    readyToCheckout: boolean;
 }
 
 export interface WithCheckoutProps {
@@ -161,6 +162,7 @@ class Checkout extends Component<
         hasSelectedShippingOptions: false,
         isHidingStepNumbers: true,
         isSubscribed: false,
+        readyToCheckout: false,
     };
 
     private embeddedMessenger?: EmbeddedCheckoutMessenger;
