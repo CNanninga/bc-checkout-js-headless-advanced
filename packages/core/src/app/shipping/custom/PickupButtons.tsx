@@ -1,5 +1,14 @@
 import React, { Component, ReactNode }  from 'react'
-import { Address,  Consignment } from '@bigcommerce/checkout-sdk';
+import { 
+    Address, 
+    Consignment, 
+    CheckoutSelectors, 
+    AddressRequestBody, 
+    ShippingRequestOptions, 
+    CheckoutParams 
+} from '@bigcommerce/checkout-sdk';
+import { withCheckout } from '../../checkout';
+import { CheckoutContextProps } from '@bigcommerce/checkout/payment-integration-api';
 import { SingleShippingFormValues } from '../SingleShippingForm';
 
 export interface PickupButtonsState {
@@ -13,8 +22,21 @@ export interface PickupButtonsProps {
     handleSingleShippingSubmit: (values: SingleShippingFormValues) => void;
 }
 
-class PickupButtons extends Component<PickupButtonsProps , PickupButtonsState> {
-    constructor(props: PickupButtonsProps) {
+export interface WithCheckoutPickupButtonsProps {
+    deleteConsignment: (consignmentId: string) => Promise<CheckoutSelectors>;
+    getConsignments: () => Consignment[] | undefined;
+    updateShippingAddress: (
+        address: Partial<AddressRequestBody>, 
+        options?: ShippingRequestOptions<CheckoutParams>
+    ) => Promise<CheckoutSelectors>;
+    selectShippingOption: (
+        shippingOptionId: string, 
+        options?: ShippingRequestOptions
+    ) => Promise<CheckoutSelectors>;
+}
+
+class PickupButtons extends Component<PickupButtonsProps & WithCheckoutPickupButtonsProps, PickupButtonsState> {
+    constructor(props: PickupButtonsProps & WithCheckoutPickupButtonsProps) {
         super(props)
   
         this.state = {
@@ -33,4 +55,26 @@ class PickupButtons extends Component<PickupButtonsProps , PickupButtonsState> {
     }
 }
 
-export default PickupButtons;
+function mapToPickupButtonsProps({
+    checkoutService,
+    checkoutState
+ }: CheckoutContextProps): WithCheckoutPickupButtonsProps {
+    const {
+        deleteConsignment,
+        updateShippingAddress,
+        selectShippingOption,
+    } = checkoutService;
+  
+    const {
+        getConsignments
+    } = checkoutState.data;
+  
+    return {
+        deleteConsignment,
+        updateShippingAddress,
+        selectShippingOption,
+        getConsignments,
+    }
+}
+
+export default withCheckout(mapToPickupButtonsProps)(PickupButtons);
