@@ -37,6 +37,8 @@ import {
     PaymentMethodProviderType,
 } from './paymentMethod';
 
+const redirectToNjs = true;
+
 export interface PaymentProps {
     errorLogger: ErrorLogger;
     isEmbedded?: boolean;
@@ -459,11 +461,17 @@ class Payment extends Component<
 
         try {
             const state = await submitOrder(mapToOrderRequestBody(values, isPaymentDataRequired()));
-            const order = state.data.getOrder();
+            const orderId = state.data.getOrder()?.orderId;
 
-            analyticsTracker.paymentComplete();
+            if (redirectToNjs && orderId) {
+                window.location.replace(`http://localhost:3000/orderconfirmation/${orderId}`);
+            } else {
+                const order = state.data.getOrder();
 
-            onSubmit(order?.orderId);
+                analyticsTracker.paymentComplete();
+
+                onSubmit(order?.orderId);
+            }
         } catch (error) {
             analyticsTracker.paymentRejected();
 
