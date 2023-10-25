@@ -35,6 +35,8 @@ import ShippingHeader from './ShippingHeader';
 import { SingleShippingFormValues } from './SingleShippingForm';
 import StripeShipping from './stripeUPE/StripeShipping';
 
+import PickupButtons from './custom/PickupButtons';
+
 export function getPickupAddress(): Address {
     return {
         firstName: 'In-store Pickup',
@@ -214,6 +216,12 @@ class Shipping extends Component<ShippingProps & WithCheckoutShippingProps, Ship
         return (
             <AddressFormSkeleton isLoading={isInitializing}>
                 <div className="checkout-form">
+                    <PickupButtons
+                        getPickupAddress={getPickupAddress}
+                        getEmptyAddress={getEmptyAddress}
+                        isPickup={this.isPickup}
+                        handleSingleShippingSubmit={this.handleSingleShippingSubmit}
+                    />
                     <ShippingHeader
                         isGuest={isGuest}
                         isMultiShippingMode={isMultiShippingMode}
