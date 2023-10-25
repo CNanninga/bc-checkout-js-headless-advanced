@@ -222,27 +222,32 @@ class Shipping extends Component<ShippingProps & WithCheckoutShippingProps, Ship
                         isPickup={this.isPickup}
                         handleSingleShippingSubmit={this.handleSingleShippingSubmit}
                     />
-                    <ShippingHeader
-                        isGuest={isGuest}
-                        isMultiShippingMode={isMultiShippingMode}
-                        onMultiShippingChange={this.handleMultiShippingModeSwitch}
-                        shouldShowMultiShipping={shouldShowMultiShipping}
-                    />
-                    <ShippingForm
-                        {...shippingFormProps}
-                        addresses={customer.addresses}
-                        deinitialize={deinitializeShippingMethod}
-                        initialize={initializeShippingMethod}
-                        isBillingSameAsShipping={isBillingSameAsShipping}
-                        isFloatingLabelEnabled={isFloatingLabelEnabled}
-                        isGuest={isGuest}
-                        isMultiShippingMode={isMultiShippingMode}
-                        onMultiShippingSubmit={this.handleMultiShippingSubmit}
-                        onSingleShippingSubmit={this.handleSingleShippingSubmit}
-                        onUseNewAddress={this.handleUseNewAddress}
-                        shouldShowSaveAddress={!isGuest}
-                        updateAddress={updateShippingAddress}
-                    />
+                    { this.isPickup(this.props.consignments)
+                        ? <div>Currently picking up.</div>
+                        : <React.Fragment>
+                                <ShippingHeader
+                                    isGuest={isGuest}
+                                    isMultiShippingMode={isMultiShippingMode}
+                                    onMultiShippingChange={this.handleMultiShippingModeSwitch}
+                                    shouldShowMultiShipping={shouldShowMultiShipping}
+                                />
+                                <ShippingForm
+                                    {...shippingFormProps}
+                                    addresses={customer.addresses}
+                                    deinitialize={deinitializeShippingMethod}
+                                    initialize={initializeShippingMethod}
+                                    isBillingSameAsShipping={isBillingSameAsShipping}
+                                    isFloatingLabelEnabled={isFloatingLabelEnabled}
+                                    isGuest={isGuest}
+                                    isMultiShippingMode={isMultiShippingMode}
+                                    onMultiShippingSubmit={this.handleMultiShippingSubmit}
+                                    onSingleShippingSubmit={this.handleSingleShippingSubmit}
+                                    onUseNewAddress={this.handleUseNewAddress}
+                                    shouldShowSaveAddress={!isGuest}
+                                    updateAddress={updateShippingAddress}
+                                />
+                            </React.Fragment>
+                    }
                 </div>
             </AddressFormSkeleton>
         );
