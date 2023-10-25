@@ -49,6 +49,8 @@ import CheckoutSupport from './CheckoutSupport';
 import mapToCheckoutProps from './mapToCheckoutProps';
 import navigateToOrderConfirmation from './navigateToOrderConfirmation';
 
+import { Button, ButtonVariant } from '../ui/button';
+
 const Billing = lazy(() =>
     retry(
         () =>
@@ -274,7 +276,7 @@ class Checkout extends Component<
     }
 
     render(): ReactNode {
-        const { error, isHidingStepNumbers } = this.state;
+        const { error, isHidingStepNumbers, readyToCheckout } = this.state;
         let errorModal = null;
 
         if (error) {
@@ -294,7 +296,23 @@ class Checkout extends Component<
         return (
             <div className={classNames({ 'is-embedded': isEmbedded(), 'remove-checkout-step-numbers': isHidingStepNumbers })}>
                 <div className="layout optimizedCheckout-contentPrimary">
-                    {this.renderContent()}
+                    { readyToCheckout
+                        ? this.renderContent()
+                        : (
+                            <div>
+                                <h3>Not ready to checkout</h3>
+                                <div>Click the button below to checkout</div>
+                                <Button
+                                    variant={ButtonVariant.Action}
+                                    onClick={
+                                        () => this.setState({readyToCheckout: true})
+                                    }
+                                >
+                                    Checkout
+                                </Button>
+                            </div>
+                        )
+                    }
                 </div>
                 {errorModal}
             </div>
